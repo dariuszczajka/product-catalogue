@@ -11,12 +11,16 @@ import { styled } from '@mui/system';
 const ProductCardActions = styled(CardActions)({
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'flex-end',
     gap: '1rem',
+    position: 'absolute',
+    bottom: '1rem',
+    width: '95%',
 });
 
 const ActiveBtn = styled(Button)({
     backgroundColor: "#4460F7",
-    width: "95%",
+    width: "100%",
     textTransform: "none",
 });
 
@@ -26,6 +30,26 @@ const DisabledBtn = styled(Button)({
     textTransform: "none",
     color: "#FFFFFF",
 });
+
+const Promo = styled("span")({
+    backgroundColor: "#F9A52B",
+    color: "#FFFFFF",
+    textAlign: 'center',
+    width: "75px",
+    height: "24px",
+    position: 'absolute',
+    marginTop: '15px'
+})
+
+const DisabledPromo = styled("span")({
+    backgroundColor: "#ff0000",
+    color: "#FFFFFF",
+    textAlign: 'center',
+    width: "75px",
+    height: "24px",
+    position: 'absolute',
+    marginTop: '15px'
+})
 
 interface ProductCardProps{
     id: number;
@@ -46,13 +70,30 @@ export const ProductCard: React.VFC<ProductCardProps> = ({
     promo,
     active}) => {
     return(
-        <Card sx={{ maxWidth: '20rem' }}>
-            <CardMedia
-                component="img"
-                height="140"
-                image={image}
-                alt={name}
-            />
+        <Card sx={{height: '25rem', position: 'relative'}}>
+            {active ?
+                <>
+                {promo && <Promo>Promo</Promo>}
+                <CardMedia
+                    component="img"
+                    height="140"
+                    image={image}
+                    alt={name}
+                />
+                </>
+            :
+                <>
+                    {promo && <DisabledPromo>Promo</DisabledPromo>}
+                    <CardMedia
+                        component="img"
+                        height="140"
+                        image={image}
+                        alt={name}
+                        sx={{filter: 'grayscale(100%)'}}
+                    />
+                </>
+
+            }
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                     {name}
@@ -60,13 +101,19 @@ export const ProductCard: React.VFC<ProductCardProps> = ({
                 <Typography variant="body2" color="text.secondary">
                     {description}
                 </Typography>
-
             </CardContent>
             <ProductCardActions>
-                <Rating name="half-rating" defaultValue={rating} precision={0.5} />
-                <ActiveBtn
+                <Rating sx={{alignSelf: 'flex-start'}} name="half-rating" defaultValue={rating} readOnly precision={0.5} />
+                {active ?
+                    <ActiveBtn
                     variant="contained"
                     size="small">Show details</ActiveBtn>
+                    :
+                    <DisabledBtn
+                    variant="contained"
+                    size="small"
+                    disabled>Show details</DisabledBtn>
+                }
             </ProductCardActions>
         </Card>
     );

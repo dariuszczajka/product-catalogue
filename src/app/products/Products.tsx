@@ -9,9 +9,11 @@ import Navbar from "../../components/Navbar";
 import {Box, Grid} from "@mui/material";
 import {styled} from "@mui/system";
 import Button from "@mui/material/Button";
+import {Paginate} from "../../components/Paginate";
+import NoProducts from "../../components/NoProducts";
 
 const ProductsWrapper = styled(Box)({
-  marginLeft: '2rem',
+  margin: "2rem 2rem 0 2rem"
 });
 
 export const Products = () => {
@@ -20,42 +22,71 @@ export const Products = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [activeValue, setActiveValue] = useState<boolean>(false);
   const [promoValue, setPromoValue] = useState<boolean>(false);
+  const [pageValue, setPageValue] = useState<number>(1);
+  const [itemCount, setItemCount] = useState<number>(0);
+
+  const changePageCallback = (page: number) => {
+    setPageValue(page);
+  }
+  const searchBarCallback = (query: string) => {
+    setSearchValue(query);
+  }
+  const activeButtonCallback = (button: boolean) => {
+    setActiveValue(button);
+  }
+  const promoButtonCallback = (button: boolean) => {
+    setPromoValue(button);
+  }
+
 
   useEffect(() => {
     GetProducts(
         searchValue,
         8,
-        1,
+        pageValue,
         promoValue,
         activeValue
     ).then(r => {
       const newProducts = r.items
-      console.log(products)
+      const totalItems = r.meta.totalItems
+      console.log(typeof changePageCallback)
+      setItemCount(totalItems)
       setProducts(newProducts)
-      console.log(products)
       setLoading(false);
     }).catch((error) => console.log(error))
-  },[searchValue, activeValue, promoValue]);
+  },[searchValue, activeValue, promoValue, pageValue]);
 
   return (
     <>
-      <Navbar/>
-      <ProductsWrapper>
-        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {products.map((product, index) => (
-            <Grid item xs={2} sm={4} md={4} key={index}>
-              <ProductCard
-                  id={product.id}
-                  name= {product.name}
-                  description={product.description}
-                  rating={product.rating}
-                  image={product.image}
-                  promo={product.promo}
-                  active={product.active}/>
+      <Navbar
+          searchBarCallback={searchBarCallback}
+          activeButtonCallback={activeButtonCallback}
+          promoButtonCallback={promoButtonCallback}
+      />
+      {itemCount < 1} ?
+        <>
+          <ProductsWrapper>
+            <Grid container rowSpacing={3} columnSpacing={10} columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
+            {products.map((product, index) => (
+                <Grid item xs={1}  key={index}>
+                  <ProductCard
+                      id={product.id}
+                      name= {product.name}
+                      description={product.description}
+                      rating={product.rating}
+                      image={product.image}
+                      promo={product.promo}
+                      active={product.active}
+                  />
+                </Grid>
+            ))}
             </Grid>
-        ))}
-        </Grid>
-      </ProductsWrapper>
+          </ProductsWrapper>
+          <Paginate pages={Math.ceil(itemCount/8)}
+                    callback={changePageCallback}/>
+        </>
+      :
+        <NoProducts/>
     </>
   );
 };
