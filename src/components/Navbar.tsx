@@ -1,4 +1,6 @@
 import {styled} from "@mui/system";
+import {User} from "../models/User";
+
 import {
     Avatar,
     Box,
@@ -7,23 +9,30 @@ import {
     FormControlLabel,
     FormGroup,
     IconButton,
-    InputBase,
+    InputBase, Menu, MenuItem,
     Paper
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import {deepPurple} from "@mui/material/colors";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import media from "styled-media-query";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import {AppRoute} from "../routing/AppRoute.enum";
+import {useHistory} from "react-router-dom";
 
 interface NavbarProps{
     searchBarCallback: Function,
     activeButtonCallback: Function,
     promoButtonCallback: Function,
+    user?: User
 }
 
-export const Navbar: React.VFC<NavbarProps> = ({searchBarCallback, activeButtonCallback,promoButtonCallback}) => {
+export const Navbar: React.VFC<NavbarProps> = ({searchBarCallback, activeButtonCallback,promoButtonCallback, user}) => {
+
+    const history = useHistory();
+    const[isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
     const Wrapper = styled(Box)({
         backgroundColor: "#ffffff",
@@ -52,9 +61,34 @@ export const Navbar: React.VFC<NavbarProps> = ({searchBarCallback, activeButtonC
         }
     });
 
+    useEffect(() => {
+        if(user != undefined){
+            setIsLoggedIn(true);
+        }
+        else{
+            setIsLoggedIn(false);
+        }
+    },[user?.username]);
+
     const[query, setQuery] = useState<string>("");
     const[active, setActive] = useState<boolean>(false);
     const[promo, setPromo] = useState<boolean>(false);
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleLogout = () => {
+        localStorage.clear();
+        setIsLoggedIn(false);
+        handleClose();
+    }
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(event.target.value);
@@ -93,13 +127,39 @@ export const Navbar: React.VFC<NavbarProps> = ({searchBarCallback, activeButtonC
                     <FormControlLabel  control={<Checkbox checked={active} onChange={handleActiveChange} />} label="Active"  />
                     <FormControlLabel  control={<Checkbox checked={promo} onChange={handlePromoChange} />} label="Promo" />
                 </FormGroup>
-            <Avatar sx={{ bgcolor: deepPurple[500], alignSelf: 'center',
-                '@media (max-width: 768px)' : {
+
+            {isLoggedIn ?
+                <>
+                    <Button onClick={handleClick}>
+                        <Avatar sx={{
+                            bgcolor: deepPurple[500], alignSelf: 'center',
+                            '@media (max-width: 768px)': {
+                                alignSelf: 'flex-end',
+                                position: 'absolute',
+                                top: '1rem'
+                            },
+                        }} src={user?.avatar} />
+                    </Button>
+                    <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        anchorOrigin={{ vertical: 'bottom',horizontal: 'right' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                    </Menu>
+                </>
+                :
+                <Button variant="text" sx={{
+                    '@media (max-width: 768px)': {
                     alignSelf: 'flex-end',
                     position: 'absolute',
                     top: '1rem'
-                },
-                }}>DC</Avatar>
+                }}} onClick={() => history.push(AppRoute.Login)}>Log in</Button>
+            }
+
         </Wrapper>
 
     )

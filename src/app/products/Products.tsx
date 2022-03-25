@@ -11,14 +11,15 @@ import {styled} from "@mui/system";
 import Button from "@mui/material/Button";
 import {Paginate} from "../../components/Paginate";
 import NoProducts from "../../components/NoProducts";
+import {User} from "../../models/User";
 
 const ProductsWrapper = styled(Box)({
   margin: "2rem 2rem 0 2rem",
 });
 
 export const Products = () => {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loggedUser, setLoggedUser] = useState<User>();
   const [searchValue, setSearchValue] = useState<string>("");
   const [activeValue, setActiveValue] = useState<boolean>(false);
   const [promoValue, setPromoValue] = useState<boolean>(false);
@@ -53,10 +54,16 @@ export const Products = () => {
       const totalItems = r.meta.totalItems
       setItemCount(totalItems)
       setProducts(newProducts)
-      setLoading(false);
       isItemsToRender = itemCount > 1;
     }).catch((error) => console.log(error))
   },[searchValue, activeValue, promoValue, pageValue]);
+
+  useEffect(() => {
+      let str = localStorage.getItem("user");
+      if(str != null){
+        setLoggedUser(JSON.parse(str));
+      }
+  },[]);
 
   return (
     <>
@@ -64,6 +71,7 @@ export const Products = () => {
           searchBarCallback={searchBarCallback}
           activeButtonCallback={activeButtonCallback}
           promoButtonCallback={promoButtonCallback}
+          user={loggedUser}
       />
       {isItemsToRender ?
         <>
