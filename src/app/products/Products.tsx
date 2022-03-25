@@ -13,7 +13,7 @@ import {Paginate} from "../../components/Paginate";
 import NoProducts from "../../components/NoProducts";
 
 const ProductsWrapper = styled(Box)({
-  margin: "2rem 2rem 0 2rem"
+  margin: "2rem 2rem 0 2rem",
 });
 
 export const Products = () => {
@@ -24,6 +24,8 @@ export const Products = () => {
   const [promoValue, setPromoValue] = useState<boolean>(false);
   const [pageValue, setPageValue] = useState<number>(1);
   const [itemCount, setItemCount] = useState<number>(0);
+
+  let isItemsToRender = itemCount > 1;
 
   const changePageCallback = (page: number) => {
     setPageValue(page);
@@ -49,10 +51,10 @@ export const Products = () => {
     ).then(r => {
       const newProducts = r.items
       const totalItems = r.meta.totalItems
-      console.log(typeof changePageCallback)
       setItemCount(totalItems)
       setProducts(newProducts)
       setLoading(false);
+      isItemsToRender = itemCount > 1;
     }).catch((error) => console.log(error))
   },[searchValue, activeValue, promoValue, pageValue]);
 
@@ -63,7 +65,7 @@ export const Products = () => {
           activeButtonCallback={activeButtonCallback}
           promoButtonCallback={promoButtonCallback}
       />
-      {itemCount < 1} ?
+      {isItemsToRender ?
         <>
           <ProductsWrapper>
             <Grid container rowSpacing={3} columnSpacing={10} columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
@@ -86,7 +88,7 @@ export const Products = () => {
                     callback={changePageCallback}/>
         </>
       :
-        <NoProducts/>
+            <NoProducts/>}
     </>
   );
 };

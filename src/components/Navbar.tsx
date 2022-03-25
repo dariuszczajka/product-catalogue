@@ -14,6 +14,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import {deepPurple} from "@mui/material/colors";
 import * as React from "react";
 import {useState} from "react";
+import media from "styled-media-query";
+import Typography from "@mui/material/Typography";
 
 interface NavbarProps{
     searchBarCallback: Function,
@@ -33,11 +35,21 @@ export const Navbar: React.VFC<NavbarProps> = ({searchBarCallback, activeButtonC
         textTransform: "none",
         gap: "5rem",
         padding: "0 2rem 0 2rem",
+        '@media (max-width: 768px)' : {
+            flexDirection: 'column',
+            height: "10rem",
+            gap: "1rem",
+            width: "85%",
+        }
     });
 
-    const Logo = styled("b")({
+    const Logo = styled(Typography)({
        fontSize: "24px",
        alignSelf: "center",
+        '@media (max-width: 768px)' : {
+           paddingTop: '1rem',
+           alignSelf: "flex-start"
+        }
     });
 
     const[query, setQuery] = useState<string>("");
@@ -61,27 +73,33 @@ export const Navbar: React.VFC<NavbarProps> = ({searchBarCallback, activeButtonC
     return(
         <Wrapper>
             <Logo>join.tsh.io</Logo>
-            <Paper
-                component="form"
-                sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400, height: '3rem', alignSelf: 'center'}}>
-                <InputBase
-                    sx={{ ml: 1, flex: 1 }}
-                    placeholder="Search"
-                    value={query}
-                    onChange={handleQueryChange}
-                    autoFocus
-                    />
-                <IconButton type="submit" onClick={() => {
-                    searchBarCallback(query);
-                }} sx={{ p: '10px' }} aria-label="search">
-                    <SearchIcon />
-                </IconButton>
-            </Paper>
-            <FormGroup sx={{flexDirection: 'row'}}>
-                <FormControlLabel  control={<Checkbox checked={active} onChange={handleActiveChange} />} label="Active"  />
-                <FormControlLabel  control={<Checkbox checked={promo} onChange={handlePromoChange} />} label="Promo" />
-            </FormGroup>
-            <Avatar sx={{ bgcolor: deepPurple[500], alignSelf: 'center'}}>DC</Avatar>
+                <Paper
+                    component="form"
+                    sx={{ display: 'flex', alignItems: 'center', width: '20rem', height: '3rem', marginTop: '1rem',alignSelf: 'flex-start'}}>
+                    <InputBase
+                        sx={{ ml: 1, flex: 1 }}
+                        placeholder="Search"
+                        value={query}
+                        onChange={handleQueryChange}
+                        autoFocus
+                        />
+                    <IconButton type="submit" onClick={() => {
+                        searchBarCallback(query);
+                    }} sx={{ p: '10px' }} aria-label="search">
+                        <SearchIcon />
+                    </IconButton>
+                </Paper>
+                <FormGroup sx={{flexDirection: 'row'}}>
+                    <FormControlLabel  control={<Checkbox checked={active} onChange={handleActiveChange} />} label="Active"  />
+                    <FormControlLabel  control={<Checkbox checked={promo} onChange={handlePromoChange} />} label="Promo" />
+                </FormGroup>
+            <Avatar sx={{ bgcolor: deepPurple[500], alignSelf: 'center',
+                '@media (max-width: 768px)' : {
+                    alignSelf: 'flex-end',
+                    position: 'absolute',
+                    top: '1rem'
+                },
+                }}>DC</Avatar>
         </Wrapper>
 
     )

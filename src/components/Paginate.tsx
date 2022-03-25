@@ -10,7 +10,16 @@ const PaginationWrapper = styled(Box)({
     margin: "2rem 2rem 0 2rem",
     gap: '1rem',
     flexDirection: 'row',
+    '@media (max-width: 768px)' : {
+        margin: "2rem 0 0 0",
+        gap: 0,
+    }
 });
+
+const PaginationButton = styled(Button)({
+    color: '#000000',
+});
+
 
 interface PaginationProps{
     pages: number,
@@ -27,9 +36,9 @@ export const Paginate: React.VFC<PaginationProps> = ({pages, callback}) => {
 
     return(
         <PaginationWrapper>
-            <Button variant="text" onClick={() => {setPage(1); callback(1)}}>First</Button>
-            <Pagination  count={pages} page={page} onChange={handleChange}/>
-            <Button variant="text" onClick={() => {setPage(pages); callback(pages)}}>Last</Button>
+            <PaginationButton variant="text" onClick={() => {setPage(1); callback(1)}}>First</PaginationButton>
+            <Pagination size="small" count={pages} page={page} onChange={handleChange}/>
+            <PaginationButton variant="text" onClick={() => {setPage(pages); callback(pages)}}>Last</PaginationButton>
         </PaginationWrapper>
     )
 }

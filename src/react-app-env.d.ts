@@ -7,3 +7,8 @@ declare namespace NodeJS {
     REACT_APP_CI: string;
   }
 }
+
+declare module "*.png" {
+  const value: any;
+  export = value;
+}
